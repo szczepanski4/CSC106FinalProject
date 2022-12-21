@@ -1,0 +1,497 @@
+var currentScene = 2;
+var gameOn = 0;
+var bodyX = 0;
+var bodyY = 0;
+var starX = 0;
+var starY = 0;
+var score = 0;
+var starCount = 0;
+var health = 3;
+
+
+
+//draw functions-----------------------------------------------------------------------------
+var drawAvatar = function(bodyX, bodyY) {
+    stroke(96, 71, 222);
+    strokeWeight(2);
+    fill(255, 255, 255); //body color
+    ellipse(-26 + bodyX, 18 + bodyY, 27, 8); //arm
+    ellipse(28 + bodyX, 20 + bodyY, 41, 9); //leg
+    ellipse(-19 + bodyX, 12 + bodyY, 12, 13); //head
+    ellipse(0 + bodyX, 20 + bodyY, 42, 12); //body
+    ellipse(28 + bodyX, 21 + bodyY, 36, 9); //leg
+    ellipse(-26 + bodyX, 21 + bodyY, 34, 8); //arm
+    fill(255, 255, 255);
+};
+
+var drawCardnial = function(bodyX, bodyY) {
+    fill(232, 7, 7);
+    triangle(187 + bodyX, 203 + bodyY, 166 + bodyX, 203 + bodyY, 170 + bodyX, 193 + bodyY); //tail
+    ellipse(187 + bodyX, 201 + bodyY, 16, 9); //body
+    triangle(192 + bodyX, 200 + bodyY, 182 + bodyX, 202 + bodyY, 177 + bodyX, 187 + bodyY); //wings
+    ellipse(19 + bodyX,197 + bodyY,8,8); //head
+    fill(255, 255, 255); // eye white color
+    ellipse(198 + bodyX,196 + bodyY,4,4); //eye white circle
+    fill(0, 0, 0); //pupil color
+    ellipse(199 + bodyX,196 + bodyY,1,1); //pupil circle
+    fill(227, 197, 0); //beak color
+    triangle(206 + bodyX, 199 + bodyY, 200 + bodyX, 200 + bodyY, 200 + bodyX, 196 + bodyY); //beak
+    line(187 + bodyX, 206 + bodyY, 191 + bodyX, 212 + bodyY);//leg left
+    line(189 + bodyX, 206 + bodyY, 194 + bodyX, 211 + bodyY);//leg right
+    line(191 + bodyX, 212 + bodyY, 195 + bodyX, 214 + bodyY); //foot left
+    line(194 + bodyX, 211 + bodyY, 198 + bodyX, 213 + bodyY); //foot right
+};
+
+var drawAlien = function(alienX, alienY) {
+    stroke(129, 131, 145);
+    noFill();
+    ellipse(187 + alienX, 195 + alienY, 20, 19);
+    fill(106, 255, 0);
+    ellipse(186 + alienX, 191 + alienY, 7, 8);
+    ellipse(185 + alienX, 191 + alienY, 1, 1); //eye left
+    ellipse(189 + alienX, 191 + alienY, 1, 1); //eye right
+    fill(129, 131, 145); //spacecraft color
+    ellipse(187 + alienX, 201 + alienY, 35, 11); //spacecraft base
+    fill(82, 163, 0);
+    ellipse(187 + alienX, 202 + alienY, 21, 5); //glowing hole
+    line(196 + alienX, 202 + alienY, 205 + alienX, 201 + alienY);
+    line(176 + alienX, 202 + alienY, 170 + alienX, 201 + alienY);
+    line(190 + alienX, 200 + alienY, 196 + alienX, 196 + alienY);
+    line(184 + alienX, 200 + alienY, 176 + alienX, 196 + alienY);
+    line(183 + alienX, 206 + alienY, 182 + alienX, 205 + alienY);
+    line(192 + alienX, 206 + alienY, 190 + alienX, 205 + alienY);
+
+};
+
+var drawHeart = function(bodyX, bodyY) {
+    noStroke();
+    fill(219, 0, 0);
+    triangle(39 + bodyX, 34  + bodyY, 50 + bodyX, 22 + bodyY, 34 + bodyX, 22 + bodyY);
+    triangle(39 + bodyX, 34 + bodyY, 28 + bodyX, 22 + bodyY, 38 + bodyX, 22 + bodyY);
+    ellipse(34 + bodyX, 21 + bodyY, 11, 8);
+    ellipse(44 + bodyX, 21 + bodyY, 11, 8);
+};
+
+var drawHeartEmpty = function(bodyX, bodyY) {
+    noStroke();
+    fill(219, 0, 0);
+    triangle(39, 34, 50, 22, 34, 22);
+    triangle(39, 34, 28, 22, 38, 22);
+    ellipse(34, 21, 11, 8);
+    ellipse(44, 21, 11, 8);
+};
+
+var drawSplashStar = function(starX, starY) {
+    stroke(255, 123, 0);
+    strokeWeight(2);
+    fill(255, 199, 59);
+    //bottom wing
+    triangle(32 + starX, 1 + starY, 32 + starX, 10 + starY, 40 + starX, 11 + starY);
+    //right wing
+    triangle(38 + starX, 10 + starY, 38 + starX, 16 + starY, 52 + starX, 11 + starY); 
+    //top wing
+    triangle(33 + starX, 16 + starY, 39 + starX, 28 + starY, 39 + starX, 16 + starY); 
+    //left wing
+    triangle(33 + starX, 10 + starY, 20 + starX, 14 + starY, 35 + starX, 15 + starY); 
+};
+
+//Avatar Constructor, prototype draw funtion, flyUp function, and checkForStar---------------
+
+
+
+var avatar = function(bodyX, bodyY) {
+    this.x = bodyX;
+    this.y = bodyY;
+};
+var myAvatar = new avatar(243,180);
+avatar.prototype.draw = function() {
+    this.y = constrain(this.y, 0, height-50);
+    drawAvatar(this.x, this.y);
+};
+
+avatar.prototype.flyUp = function() {
+    this.y -= 3;
+   
+    avatar.y += 3;
+   
+     
+    
+};
+
+avatar.prototype.flyDown = function() {
+    this.y += 3;
+   
+    avatar.y += 3;
+    
+    
+    
+};
+
+avatar.prototype.checkForStars = function(stars) {
+    if ((stars.x >= this.x - 75 && stars.x <= (this.x - 40)) &&
+        (stars.y >= this.y && stars.y <= (this.y + 40))) {
+        stars.y = -400;
+        starCount += 1;
+        
+    }
+};
+
+//Enemy  Constructor, and prototype draw funtion---------------------------------------------
+var cardnials  = function(bodyX, bodyY) { //Cardnial Constructor
+    this.x = bodyX;
+    this.y = bodyY;
+};
+
+cardnials.prototype.draw = function() { //Cardnial prototype draw
+    this.y = constrain(this.y, 0, height-50);
+    drawCardnial(this.x, this.y);
+};
+// Cardnials Array
+var Cardnials = [];
+    for (var i = 0; i < 500; i++) {  
+        Cardnials.push(new cardnials(-235 * i, random(-92,104)));                                                                                                                             
+        
+        
+    }
+    avatar.prototype.checkForCardnials = function(cardnials) {
+    if ((cardnials.x >= this.x - 75 && cardnials.x <= (this.x - 40)) &&
+        (cardnials.y >= this.y && cardnials.y <= (this.y + 40))) {
+        //aliens.y = -400;
+        health -= 1;
+        println("aliens X: " + cardnials.x);
+        println("aliens Y: " + cardnials.y);
+        println("AvatarX : " + myAvatar.x);
+        println("Avatar Y : " + myAvatar.y);
+        
+        
+        }
+    };
+var aliens  = function(bodyX, bodyY) { //Alien Constructor
+    this.x = bodyX;
+    this.y = bodyY;
+};
+
+aliens.prototype.draw = function() { //Alien prototype draw
+    drawAlien(this.x, this.y);
+   
+};
+
+// Aliens Array
+var Aliens = [];
+    for (var i = 0; i < 500; i++) {  
+        Aliens.push(new aliens(-235 * i, random(-92,104)));                                                                                                                             
+        
+        
+    }
+    avatar.prototype.checkForAliens = function(aliens) {
+    if ((aliens.x >= this.x - 75 && aliens.x <= (this.x - 40)) &&
+        (aliens.y >= this.y && aliens.y <= (this.y + 40))) {
+        //aliens.y = -400;
+        health -= 2;
+        println("aliens X: " + aliens.x);
+        println("aliens Y: " + aliens.y);
+        println("AvatarX : " + myAvatar.x);
+        println("Avatar Y : " + myAvatar.y);
+        
+        
+        }
+    };
+//Heart Constructor, and prototype draw funtion----------------------------------------------
+var heart = function(bodyX, bodyY) {
+    this.x = bodyX;
+    this.y = bodyY;
+};
+
+heart.prototype.draw = function() {
+    this.y = constrain(this.y, 0, height-50);
+    drawHeart(this.x, this.y);
+};
+
+//Foreground stars---------------------------------------------------------------------------
+var star = function(x, y) {
+    this.x = x;
+    this.y = y;
+};
+
+star.prototype.draw = function() {
+    stroke(255, 123, 0);
+    strokeWeight(2);
+    fill(255, 212, 94);
+    starX = this.x;
+    starY = this.y;
+    //bottom wing
+    triangle(32 + starX, 1 + starY, 32 + starX, 10 + starY, 40 + starX, 11 + starY);
+    //right wing
+    triangle(38 + starX, 10 + starY, 38 + starX, 16 + starY, 52 + starX, 11 + starY); 
+    //top wing
+    triangle(33 + starX, 16 + starY, 39 + starX, 28 + starY, 39 + starX, 16 + starY); 
+    //left wing
+    triangle(33 + starX, 10 + starY, 20 + starX, 14 + starY, 35 + starX, 15 + starY); 
+};
+
+//star array
+var Stars = [];
+    for (var i = 0; i < 100; i++) {  
+        Stars.push(new star(i * -300 - 300, random(70, 340)));
+    }
+    
+//clouds-------------------------------------------------------------------------------------
+var cloudsDay = function(){
+//Day Clouds------------------------------------
+//top clouds
+stroke(255, 123, 0);
+    strokeWeight(2);
+fill(255, 239, 150);
+ellipse(48, -52, 446, 271);
+ellipse(356, -46, 517, 272);
+
+fill(255, 212, 94);
+ellipse(19, -24, 410, 188);
+ellipse(246, 2, 470, 126);
+
+fill(255, 198, 64);
+ellipse(330, -42, 455, 193);
+ellipse(46, -43, 610, 181);
+
+//bottom clouds
+stroke(255, 123, 0);
+strokeWeight(2);
+fill(255, 242, 176);
+ellipse(62, 438, 456, 216);
+ellipse(339, 530, 773, 426);
+
+fill(255, 233, 122);
+ellipse(115, 441, 382, 200);
+ellipse(328, 451, 491, 193);
+
+fill(255, 212, 94);
+ellipse(228, 447, 425, 169);
+
+fill(255, 198, 64);
+ellipse(330, 481, 410, 193);
+ellipse(133, 483, 410, 212);
+};
+
+//Night Clouds--------------------------------
+var cloudsNight = function(){
+//top clouds
+stroke(0, 5, 138);
+fill(46, 4, 199);
+ellipse(48, -52, 446, 271);
+ellipse(356, -46, 517, 272);
+
+fill(86, 51, 240);
+ellipse(19, -24, 410, 188);
+ellipse(246, 2, 470, 126);
+
+fill(119, 82, 250);
+ellipse(330, -42, 455, 193);
+ellipse(46, -43, 610, 181);
+
+//bottom clouds
+stroke(121, 0, 227);
+fill(46, 4, 199);
+ellipse(62, 438, 456, 216);
+ellipse(339, 530, 773, 426);
+
+fill(0, 0, 153);
+ellipse(115, 441, 382, 200);
+ellipse(328, 451, 491, 193);
+
+fill(0, 0, 120);
+ellipse(228, 447, 425, 169);
+
+fill(6, 0, 84);
+ellipse(330, 481, 410, 193);
+ellipse(133, 483, 410, 212);
+};
+
+
+//Khan Button Code---------------------------------------------------------------------------
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 285;
+    this.height = config.height || 66;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+    this.color = config.color || color(255, 255, 255);
+};
+
+Button.prototype.draw = function() {
+    stroke(255, 170, 0);
+    strokeWeight(5);
+    fill(186, 229, 255);
+    rect(this.x - 7, this.y - 50, this.width, this.height, 5);
+    fill(96, 71, 222);
+    textSize(29);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 11, this.y - 50 + this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x - 7 &&
+           mouseX < (this.x - 7 + this.width) &&
+           mouseY > this.y - 50 &&
+           mouseY < (this.y - 50 + this.height);
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+var start = new Button({ //creates start/pause button
+    x: 61,
+    y: 231,
+    label: "Begin your Journey",
+    onClick: function() {
+        if (currentScene === 1) {
+        currentScene = 2;
+        }
+        else {
+            
+            myAvatar.y = 50;
+            starCount = 0;
+        
+        }
+    }
+    });
+
+
+
+mouseClicked = function() {
+    start.handleMouseClick();
+};
+//Scenes-------------------------------------------------------------------------------------
+//Splash Screen
+var splashScene = function() {
+    currentScene = 1;
+    background(15, 0, 36); //background
+    drawSplashStar(155, 116);
+    start.draw();
+    fill(255, 212, 94);
+    textSize(30);
+    text("Star Chaser", 116, 53);
+    textSize(17);
+    text("By: Payton Wallace and Cody Szczepanski", 34, 355);
+    if ( myAvatar.y > 340){ //switch to restart scene
+        textSize(20);
+        fill(255, 0, 0);
+        text("You died- would you like to try again?" , 38, 269, 500, 500);
+        text("You died- would you like to try again?" , 38, 269, 500, 500);
+    }
+};
+
+//Game Scene Day
+var gameSceneDay = function() {
+    currentScene = 2;
+    background(186, 229, 255); //background
+    avatar(200, 200); //avatar
+    
+    for (var i = 0; i < Stars.length; i++) { //calls stars and checks for star collisions
+        Stars[i].draw();
+        Cardnials[i].draw();
+        myAvatar.checkForStars(Stars[i]);
+        myAvatar.checkForCardnials(Cardnials[i]);
+        Stars[i].x += 3;
+        Cardnials[i].x += 4;
+        
+    }
+    if (keyIsPressed && key.code === 32) { //makes avatar fly
+            myAvatar.flyUp();
+           
+            
+        }
+    else if (myAvatar.y < 340)  { //makes avatar fall
+        myAvatar.flyDown();
+    }
+    
+    if ( myAvatar.y > 340){ //switch to restart scene
+    currentScene = 1;
+    }
+    myAvatar.draw(); //draws avatar
+    cloudsDay(); //clouds
+    if(starCount === 25) { //scene change
+        currentScene = 3;
+    }
+};
+
+//Game Scene
+var gameSceneNight = function() {
+    currentScene = 3;
+    background(15, 0, 36); //background
+    avatar(200, 200); //avatar
+    
+    for (var i = 0; i < Stars.length; i++) {  //calls stars and aliens and checks for star collisions
+        Aliens[i].draw();
+        Stars[i].draw();
+        myAvatar.checkForStars(Stars[i]);
+        myAvatar.checkForAliens(Aliens[i]);
+        Stars[i].x += 3;
+        Aliens[i].x += 5;
+    }
+    if (keyIsPressed && key.code === 32) { //makes avatar fly
+            myAvatar.flyUp();
+           
+                
+            
+            
+            
+            
+
+            
+        }
+    else if (keyIsPressed === false)  { //makes avatar fall
+        myAvatar.flyDown();
+       
+        
+    }
+    myAvatar.draw(); //draws avatar
+    cloudsNight(); //clouds
+    if(starCount === 40) { //scene change
+        currentScene = 4;
+    }
+};
+
+var endScene = function() {
+    background(15, 0, 36); //background
+    text("You have completed your journey star sailor! Return home?", 200, 200, 50, 50);
+    
+};
+
+var restartScene = function () {
+    starCount = 0;
+    textSize(21);
+    text("You died would you like to try again", 28, 125, 577, 200);
+    
+};
+
+//draw function------------------------------------------------------------------------------
+var draw = function()
+{
+    if (currentScene === 1) {
+        splashScene();
+    }
+    else if (currentScene === 2) {
+        gameSceneDay();
+    }
+    else if (currentScene === 3) {
+        gameSceneNight();
+    }
+    else if (currentScene === 4) {
+        endScene();
+    }
+    else if (currentScene === 5) {
+        restartScene();
+    }
+    
+    /*if (mouseIsPressed) {
+        println("X: " + mouseX);
+        println("Y: " + mouseY);
+        
+    }
+    */
+};
+
